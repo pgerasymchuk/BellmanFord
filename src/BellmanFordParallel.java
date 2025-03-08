@@ -16,6 +16,7 @@ public class BellmanFordParallel implements ShortestPathFinder {
         AtomicBoolean changes = new AtomicBoolean(false);
 
         int numThreads = Runtime.getRuntime().availableProcessors();
+//        int numThreads = 100;
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
         int edgesPerThread = Math.max(1, g.E / numThreads);
