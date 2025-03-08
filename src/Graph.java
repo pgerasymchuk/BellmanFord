@@ -16,7 +16,7 @@ public class Graph {
         }
 
         this.V = V;
-        this.E = (int) density * V * (V - 1);
+        this.E = (int)(density * V * (V - 1));
         this.edges = new ArrayList<>(E);
 
         Random random = new Random(randomState);
@@ -27,7 +27,7 @@ public class Graph {
                 source = random.nextInt(V);
                 destination = random.nextInt(V);
             } while (source == destination || !edgeSet.add(source + "-" + destination));
-            edges.set(i, new Edge(source, destination, random.nextInt()));
+            edges.add(new Edge(source, destination, random.nextInt(100000) + 1));
         }
     }
 }
