@@ -1,6 +1,4 @@
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 // Represents a directed graph
 public class Graph {
@@ -9,7 +7,7 @@ public class Graph {
 
     public final int V;
     public final int E;
-    public final Edge[] edges;
+    public final List<Edge> edges;
 
     // density = E / ( V * (V - 1))
     public Graph(int V, float density, int randomState) {
@@ -19,7 +17,7 @@ public class Graph {
 
         this.V = V;
         this.E = (int) density * V * (V - 1);
-        this.edges = new Edge[E];
+        this.edges = new ArrayList<>(E);
 
         Random random = new Random(randomState);
         Set<String> edgeSet = new HashSet<>();
@@ -29,7 +27,7 @@ public class Graph {
                 source = random.nextInt(V);
                 destination = random.nextInt(V);
             } while (source == destination || !edgeSet.add(source + "-" + destination));
-            edges[i] = new Edge(source, destination, random.nextInt());
+            edges.set(i, new Edge(source, destination, random.nextInt()));
         }
     }
 }

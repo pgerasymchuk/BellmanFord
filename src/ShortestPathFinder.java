@@ -1,5 +1,7 @@
+import java.util.List;
+
 public interface ShortestPathFinder {
-    record Result (int[] distances, int [] predecessors) {}
+    record Result (List<Integer> distances, List<Integer> predecessors) {}
 
     Result findShortestPaths(Graph g, int source);
 }
