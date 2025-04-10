@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -10,9 +11,9 @@ public class BellmanFordParallel implements ShortestPathFinder {
 
     @Override
     public Result findShortestPaths(Graph g, int source) {
-        List<Integer> distances = new ArrayList<>(Collections.nCopies(g.V, Integer.MAX_VALUE));
+        List<Integer> distances = Collections.synchronizedList(new ArrayList<>(Collections.nCopies(g.V, Integer.MAX_VALUE)));
         distances.set(source, 0);
-        List<Integer> predecessors = new ArrayList<>(Collections.nCopies(g.V, -1));
+        List<Integer> predecessors = Collections.synchronizedList(new ArrayList<>(Collections.nCopies(g.V, -1)));
         AtomicBoolean changes = new AtomicBoolean(false);
 
         int numThreads = Runtime.getRuntime().availableProcessors();
@@ -37,7 +38,7 @@ public class BellmanFordParallel implements ShortestPathFinder {
                     for (int j = finalStart; j < end; j++) {
                         Graph.Edge edge = g.edges.get(j);
 
-                        synchronized (lock) {
+                        //synchronized (lock) {
                             if (distances.get(edge.source()) != Integer.MAX_VALUE &&
                                 distances.get(edge.source()) + edge.weight() < distances.get(edge.destination())) {
 
@@ -45,7 +46,7 @@ public class BellmanFordParallel implements ShortestPathFinder {
                                 predecessors.set(edge.destination(), edge.source());
                                 localChange = true;
                             }
-                        }
+                        //}
                     }
                     if (localChange) { changes.set(true); }
                 }));
