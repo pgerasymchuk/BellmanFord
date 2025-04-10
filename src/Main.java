@@ -6,7 +6,7 @@ public class Main {
 
         long t0 = System.nanoTime();
 
-        Graph g = new Graph(1000, 0.5f, 0);
+        Graph g = new Graph(5000, 0.5f, 0);
 
         long t1 = System.nanoTime();
         ShortestPathFinder.Result result1 = sequential.findShortestPaths(g, 0);
