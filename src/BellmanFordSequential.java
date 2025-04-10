@@ -21,7 +21,7 @@ public class BellmanFordSequential implements ShortestPathFinder {
                         changes = true;
                 }
             }
-            if (!changes) { break; } // no updates in this iteration
+            if (!changes) { System.out.printf("seq break at %s iteration\n", i); break; } // no updates in this iteration
         }
 
         for (Graph.Edge edge : g.edges) {
