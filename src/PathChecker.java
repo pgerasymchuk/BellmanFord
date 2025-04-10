@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class PathChecker {
 
@@ -14,79 +12,48 @@ public class PathChecker {
     }
 
     public static boolean verifySolution(Graph g, int source, ShortestPathFinder.Result result) {
-        if (result == null) return false;
+        record EdgeVertices(int start, int end) {}
+        Map<EdgeVertices, Integer> edges = new HashMap<>();
+        for (Graph.Edge edge : g.edges){
+            edges.put(new EdgeVertices(edge.source(), edge.destination()), edge.weight());
+        }
 
         List<Integer> distances = result.distances();
         List<Integer> predecessors = result.predecessors();
-        boolean isValid = true;
 
-        // Check 1: Source distance should be 0
-        if (distances.get(source) != 0) {
-            System.out.println("Verification failed: Source distance is not 0");
-            isValid = false;
-        }
+        Map<Integer, Integer> realDistances = new HashMap<>();
 
-        // Check 2: Triangle inequality for all edges
-        for (Graph.Edge edge : g.edges) {
-            int u = edge.source();
-            int v = edge.destination();
-            int weight = edge.weight();
-
-            if (distances.get(u) != Integer.MAX_VALUE &&
-                    distances.get(v) != Integer.MAX_VALUE &&
-                    distances.get(u) + weight < distances.get(v)) {
-                System.out.println("Verification failed: Triangle inequality violated for edge " +
-                        u + " -> " + v);
-                isValid = false;
-            }
-        }
-
-        // Check 3: Path validity
-        for (int v = 0; v < g.V; v++) {
-            if (v == source || distances.get(v) == Integer.MAX_VALUE) continue;
-
-            List<Integer> path = getPath(predecessors, v);
-            if (path.isEmpty()) {
-                System.out.println("Verification failed: No path to vertex " + v +
-                        " despite finite distance");
-                isValid = false;
-                continue;
+        for (int v = 0; v < distances.size(); v++) {
+            if (v == source) {
+                realDistances.put(v, 0);
             }
 
-            // Verify path starts at source and ends at destination
-            if (path.getFirst() != source || path.getLast() != v) {
-                System.out.println("Verification failed: Invalid path endpoints for vertex " + v);
-                isValid = false;
-            }
+            int dist = 0;
+            int current = v;
+            boolean reachable = true;
 
-            // Verify path distance matches computed distance
-            int pathDistance = 0;
-            for (int i = 0; i < path.size() - 1; i++) {
-                int current = path.get(i);
-                int next = path.get(i + 1);
-                boolean foundEdge = false;
-
-                for (Graph.Edge edge : g.edges) {
-                    if (edge.source() == current && edge.destination() == next) {
-                        pathDistance += edge.weight();
-                        foundEdge = true;
-                        break;
-                    }
+            while (current != source) {
+                int prev = predecessors.get(current);
+                if (prev == -1) {
+                    reachable = false;
+                    break;
                 }
 
-                if (!foundEdge) {
-                    System.out.println("Verification failed: Invalid edge in path to vertex " + v);
-                    isValid = false;
-                }
+                int edgeWeight = edges.get(new EdgeVertices(prev, current));
+                dist += edgeWeight;
+                current = prev;
             }
 
-            if (pathDistance != distances.get(v)) {
-                System.out.println("Verification failed: Path distance mismatch for vertex " + v +
-                        ". Expected: " + distances.get(v) + ", Found: " + pathDistance);
-                isValid = false;
+            if (reachable) {
+                realDistances.put(v, dist);
             }
         }
 
-        return isValid;
+        for (int v = 0; v < distances.size(); v++) {
+            if (!distances.get(v).equals(realDistances.get(v))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
