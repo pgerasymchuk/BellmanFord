@@ -4,20 +4,30 @@ public class Main {
         ShortestPathFinder sequential = new BellmanFordSequential();
         ShortestPathFinder parallel = new BellmanFordParallel();
 
-        long t0 = System.nanoTime();
-
+        //long t0 = System.nanoTime();
         Graph g = new Graph(5000, 0.5f, 0);
 
         long t1 = System.nanoTime();
+        //System.out.println("Generating graph time, ms: " + (t1 - t0) * 1e-6);
         ShortestPathFinder.Result result1 = sequential.findShortestPaths(g, 0);
         long t2 = System.nanoTime();
-        ShortestPathFinder.Result result2 = parallel.findShortestPaths(g, 0);
-        long t3 = System.nanoTime();
-
-        System.out.println("Generating graph time, ms: " + (t1 - t0) * 1e-6);
         System.out.println("Sequential time, ms: " + (t2 - t1) * 1e-6);
-        System.out.println("Parallel time, ms: " + (t3 - t2) * 1e-6);
-        System.out.println("Speedup: " + (t2 - t1) / (double)(t3 - t2));
+
+        System.out.print("Parallel time, ms: ");
+        ShortestPathFinder.Result result2 = null;
+        int nTests = 5;
+        long sum = 0;
+        for (int i = 0; i < nTests; i++) {
+            long t3 = System.nanoTime();
+            result2 = parallel.findShortestPaths(g, 0);
+            long t4 = System.nanoTime();
+            System.out.print((t4 - t3) * 1e-6 + " ");
+            sum += (t4 - t3);
+        }
+        double avgParallelTime = sum / (double)nTests;
+        
+        System.out.println("Average parallel time, ms: " + avgParallelTime * 1e-6);
+        System.out.println("Speedup: " + (t2 - t1) / avgParallelTime);
 
         boolean isSequentialCorrect = PathChecker.verifySolution(g, 0, result1);
         boolean isParallelCorrect = PathChecker.verifySolution(g, 0, result2);
