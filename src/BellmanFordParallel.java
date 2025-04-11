@@ -19,20 +19,21 @@ public class BellmanFordParallel implements ShortestPathFinder {
         int numThreads = Runtime.getRuntime().availableProcessors();
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-        /*long t1 = System.nanoTime();
+        long t1 = System.nanoTime();
 
-        List<Graph.Edge>[] groupedEdges = new ArrayList[g.V];
-        for (int i = 0; i < g.V; i++) {
+        int verticesPerGroup = g.V / numThreads;
+        List<Graph.Edge>[] groupedEdges = new ArrayList[numThreads];
+        for (int i = 0; i < numThreads; i++) {
             groupedEdges[i] = new ArrayList<>();
         }
         for (Graph.Edge edge : g.edges) {
-            groupedEdges[edge.destination()].add(edge);
+            groupedEdges[edge.destination() / verticesPerGroup].add(edge);
         }
 
         long t2 = System.nanoTime();
-        System.out.println("Initializing, ms: " + (t2 - t1) * 1e-6);*/
+        System.out.println("Initializing, ms: " + (t2 - t1) * 1e-6);
 
-        long t1  = System.nanoTime();
+        /*
         g.edges.sort(Comparator.comparingInt(Graph.Edge::destination)); // PERFORM SORTING ON COPY OF g.edges !!!
 
 
@@ -53,7 +54,7 @@ public class BellmanFordParallel implements ShortestPathFinder {
             edgesIndicesBoundariesForEachThread[i] = currentIndex;
         }
         long t2 = System.nanoTime();
-        System.out.println("sorting and preparation, ms: " + (t2 - t1) * 1e-6);
+        System.out.println("sorting and preparation, ms: " + (t2 - t1) * 1e-6); */
 
         for (int i = 0; i < g.V - 1; i++) {
             changes.set(false);
@@ -61,17 +62,20 @@ public class BellmanFordParallel implements ShortestPathFinder {
             List<Future<?>> futures = new ArrayList<>();
 
             //for (int j = 0; j < g.V; j += edgeGroupsPerThread) {
+            //for (int j = 0; j < numThreads; j++) {
             for (int j = 0; j < numThreads; j++) {
                 //int start = j;
                 //int end = Math.min(g.V, j + edgeGroupsPerThread);
-                int start = edgesIndicesBoundariesForEachThread[j];
-                int end = edgesIndicesBoundariesForEachThread[j + 1];
+                //int start = edgesIndicesBoundariesForEachThread[j];
+                //int end = edgesIndicesBoundariesForEachThread[j + 1];
 
+                int finalJ = j;
                 futures.add(executor.submit(() -> {
                     boolean localChange = false;
-                    for (int k = start; k < end; k++) {
+                    //for (int k = start; k < end; k++) {
                         //for (Graph.Edge edge : groupedEdges[k]) {
-                            Graph.Edge edge = g.edges.get(k);
+                    for (Graph.Edge edge : groupedEdges[finalJ]) {
+                            //Graph.Edge edge = g.edges.get(k);
                             if (distances[edge.source()] != Integer.MAX_VALUE &&
                                     distances[edge.source()] + edge.weight() < distances[edge.destination()]) {
 
