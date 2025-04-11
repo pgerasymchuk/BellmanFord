@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -10,25 +11,25 @@ public class BellmanFordParallel implements ShortestPathFinder {
 
     @Override
     public Result findShortestPaths(Graph g, int source) {
-        List<Integer> distances = new ArrayList<>(Collections.nCopies(g.V, Integer.MAX_VALUE));
-        distances.set(source, 0);
-        List<Integer> predecessors = new ArrayList<>(Collections.nCopies(g.V, -1));
+        int[] distances = new int[g.V];
+        int[] predecessors = new int[g.V];
+        Arrays.fill(distances, Integer.MAX_VALUE);
+        Arrays.fill(predecessors, -1);
+        distances[source] = 0;
+
         AtomicBoolean changes = new AtomicBoolean(false);
 
         int numThreads = Runtime.getRuntime().availableProcessors();
-//        int numThreads = 100;
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-
-        //int edgesPerThread = Math.max(1, g.E / numThreads);
 
         long t1 = System.nanoTime();
 
-        List<List<Graph.Edge>> groupedEdges = new ArrayList<>(g.V); // edges grouped by destination vertex
+        List<Graph.Edge>[] groupedEdges = new ArrayList[g.V];
         for (int i = 0; i < g.V; i++) {
-            groupedEdges.add(new ArrayList<>());
+            groupedEdges[i] = new ArrayList<>();
         }
         for (Graph.Edge edge : g.edges) {
-            groupedEdges.get(edge.destination()).add(edge);
+            groupedEdges[edge.destination()].add(edge);
         }
 
         long t2 = System.nanoTime();
@@ -38,30 +39,28 @@ public class BellmanFordParallel implements ShortestPathFinder {
             changes.set(false);
 
             List<Future<?>> futures = new ArrayList<>();
-            Object lock = new Object();
 
-            /*for (int start = 0; start < g.E; start += edgesPerThread) {
-                int finalStart = start;
-                int end = Math.min(start + edgesPerThread, g.E);*/
-            //for (int dest = 0; dest < g.V; dest++) {
-            int edgeGroupsPerThread = groupedEdges.size() / numThreads;   // rewrite to g.V / numThreads for performance
-            for (int j = 0; j < groupedEdges.size(); j += edgeGroupsPerThread) {  // rewrite to g.V / numThreads for performance
+            int edgeGroupsPerThread = Math.max(1, g.V / numThreads);
+            for (int j = 0; j < g.V; j += edgeGroupsPerThread) {
+                int start = j;
+                int end = Math.min(g.V, j + edgeGroupsPerThread);
 
-                int finalJ = j;
                 futures.add(executor.submit(() -> {
                     boolean localChange = false;
-
-                    for (int k = finalJ; k < finalJ + edgeGroupsPerThread; k++){
-                        for (Graph.Edge edge : groupedEdges.get(k)) {
-                            //synchronized (lock) {
-                                if (distances.get(edge.source()) != Integer.MAX_VALUE &&
-                                        distances.get(edge.source()) + edge.weight() < distances.get(edge.destination())) {
-
-                                    distances.set(edge.destination(), distances.get(edge.source()) + edge.weight());
-                                    predecessors.set(edge.destination(), edge.source());
-                                    localChange = true;
+                    for (int k = start; k < end; k++) {
+                        for (Graph.Edge edge : groupedEdges[k]) {
+                            int u = edge.source();
+                            int v = edge.destination();
+                            int w = edge.weight();
+                            if (distances[u] != Integer.MAX_VALUE && distances[u] + w < distances[v]) {
+                                synchronized (distances) {  // Needed to prevent data races
+                                    if (distances[u] != Integer.MAX_VALUE && distances[u] + w < distances[v]) {
+                                        distances[v] = distances[u] + w;
+                                        predecessors[v] = u;
+                                        localChange = true;
+                                    }
                                 }
-                            //}
+                            }
                         }
                     }
                     if (localChange) { changes.set(true); }
@@ -78,14 +77,20 @@ public class BellmanFordParallel implements ShortestPathFinder {
         }
 
         for (Graph.Edge edge : g.edges) {
-            if (distances.get(edge.source()) != Integer.MAX_VALUE &&
-                    distances.get(edge.source()) + edge.weight() < distances.get(edge.destination())) {
-
+            int u = edge.source();
+            int v = edge.destination();
+            int w = edge.weight();
+            if (distances[u] != Integer.MAX_VALUE && distances[u] + w < distances[v]) {
                 throw new IllegalArgumentException("Graph contains a negative-weight cycle");
             }
         }
 
         executor.shutdown();
-        return new Result(distances, predecessors);
+
+        List<Integer> distanceList = Arrays.stream(distances).boxed().toList();
+        List<Integer> predecessorList = Arrays.stream(predecessors).boxed().toList();
+
+        return new Result(distanceList, predecessorList);
     }
+
 }
