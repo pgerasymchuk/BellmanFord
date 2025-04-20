@@ -9,25 +9,33 @@ public class Graph {
     public final int E;
     public final List<Edge> edges;
 
-    // density = E / ( V * (V - 1))
-    public Graph(int V, float density, int randomState) {
-        if (density <= 0.0 || density > 1.0) {
-            throw new IllegalArgumentException("Graph density must be between 0.0 and 1.0");
+    public final int MIN_WEIGHT = -10000;
+    public final int MAX_WEIGHT = 10000;
+
+    public Graph(int V, int avgEdgesFromVertex, int randomState) {
+        if (avgEdgesFromVertex > V - 1) {
+            throw new IllegalArgumentException("Invalid average number of edges from vertex");
         }
 
         this.V = V;
-        this.E = (int)(density * V * (V - 1));
-        this.edges = new ArrayList<>(E);
+        this.E = V * avgEdgesFromVertex;
+        this.edges = new ArrayList<>(this.E);
 
         Random random = new Random(randomState);
-        Set<String> edgeSet = new HashSet<>();
-        for (int i = 0; i < E; i++) {
-            int source, destination;
-            do {
-                source = random.nextInt(V);
-                destination = random.nextInt(V);
-            } while (source == destination || !edgeSet.add(source + "-" + destination));
-            edges.add(new Edge(source, destination, random.nextInt(100000) + 1));
+        Set<Integer> destVertexSet = new HashSet<>();
+
+        for (int source = 0; source < V; source++) {
+            int numEdges = random.nextInt(2 * avgEdgesFromVertex) + 1;
+
+            for (int i = 0; i < numEdges; i++) {
+                int dest;
+                do {
+                    dest = random.nextInt(V);
+                } while (!destVertexSet.add(dest));
+                edges.add(new Edge(source, dest, random.nextInt(MAX_WEIGHT - MIN_WEIGHT + 1) + MIN_WEIGHT));
+            }
+
+            destVertexSet.clear();
         }
     }
 }
