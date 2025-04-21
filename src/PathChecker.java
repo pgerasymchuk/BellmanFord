@@ -44,9 +44,10 @@ public class PathChecker {
                 current = prev;
             }
 
-            if (reachable) {
-                realDistances.put(v, dist);
-            }
+//            if (reachable) {
+//                realDistances.put(v, dist);
+//            }
+            realDistances.put(v, reachable ? dist : Integer.MAX_VALUE);
         }
 
         for (int v = 0; v < distances.size(); v++) {
