@@ -4,11 +4,11 @@ public class Main {
         ShortestPathFinder sequential = new BellmanFordSequential();
         ShortestPathFinder parallel = new BellmanFordParallel();
 
-        //long t0 = System.nanoTime();
-        Graph g = new Graph(5000, 0.1f, 0);
+        long t0 = System.nanoTime();
+        Graph g = new Graph(5000, 100, 0);
 
         long t1 = System.nanoTime();
-        //System.out.println("Generating graph time, ms: " + (t1 - t0) * 1e-6);
+        System.out.println("Generating graph time, ms: " + (t1 - t0) * 1e-6);
         ShortestPathFinder.Result result1 = sequential.findShortestPaths(g, 0);
         long t2 = System.nanoTime();
         System.out.println("Sequential time, ms: " + (t2 - t1) * 1e-6);

@@ -22,20 +22,16 @@ public class Graph {
         this.edges = new ArrayList<>(this.E);
 
         Random random = new Random(randomState);
-        Set<Integer> destVertexSet = new HashSet<>();
+        record EdgeWithoutWeight(int source, int destination) {}
+        Set<EdgeWithoutWeight> edgeSet = new HashSet<>();
 
-        for (int source = 0; source < V; source++) {
-            int numEdges = random.nextInt(2 * avgEdgesFromVertex) + 1;
-
-            for (int i = 0; i < numEdges; i++) {
-                int dest;
-                do {
-                    dest = random.nextInt(V);
-                } while (!destVertexSet.add(dest));
-                edges.add(new Edge(source, dest, random.nextInt(MAX_WEIGHT - MIN_WEIGHT + 1) + MIN_WEIGHT));
-            }
-
-            destVertexSet.clear();
+        for (int i = 0; i < this.E; i++) {
+            int source, destination;
+            do {
+                source = random.nextInt(V);
+                destination = random.nextInt(V);
+            } while (source == destination || !edgeSet.add(new EdgeWithoutWeight(source, destination)));
+            edges.add(new Edge(source, destination, random.nextInt(MAX_WEIGHT - MIN_WEIGHT + 1) + MIN_WEIGHT));
         }
     }
 }
