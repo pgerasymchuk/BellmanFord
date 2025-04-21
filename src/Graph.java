@@ -9,7 +9,7 @@ public class Graph {
     public final int E;
     public final List<Edge> edges;
 
-    public final int MIN_WEIGHT = -10000;
+    public final int MIN_WEIGHT = 1;//-10000;
     public final int MAX_WEIGHT = 10000;
 
     public Graph(int V, int avgEdgesFromVertex, int randomState) {
@@ -22,15 +22,15 @@ public class Graph {
         this.edges = new ArrayList<>(this.E);
 
         Random random = new Random(randomState);
-        record EdgeWithoutWeight(int source, int destination) {}
-        Set<EdgeWithoutWeight> edgeSet = new HashSet<>();
+        record EdgeVertices(int source, int destination) {}
+        Set<EdgeVertices> edgeVerticesSet = new HashSet<>();
 
         for (int i = 0; i < this.E; i++) {
             int source, destination;
             do {
                 source = random.nextInt(V);
                 destination = random.nextInt(V);
-            } while (source == destination || !edgeSet.add(new EdgeWithoutWeight(source, destination)));
+            } while (source == destination || !edgeVerticesSet.add(new EdgeVertices(source, destination)));
             edges.add(new Edge(source, destination, random.nextInt(MAX_WEIGHT - MIN_WEIGHT + 1) + MIN_WEIGHT));
         }
     }

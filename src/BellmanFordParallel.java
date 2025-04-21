@@ -21,10 +21,11 @@ public class BellmanFordParallel implements ShortestPathFinder {
 
         long t1 = System.nanoTime();
 
-        int verticesPerGroup = g.V / numThreads;
+        //int verticesPerGroup = g.V / numThreads;
         byte[] groupNumberOfEdges = new byte[g.E];
         for (int i = 0; i < g.E; i++) {
-            groupNumberOfEdges[i] = (byte)(g.edges.get(i).destination() / verticesPerGroup);
+            //groupNumberOfEdges[i] = (byte)((g.edges.get(i).destination() / verticesPerGroup) % numThreads);
+            groupNumberOfEdges[i] = (byte)(g.edges.get(i).destination() % numThreads);
         }
 
         long t2 = System.nanoTime();

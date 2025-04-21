@@ -5,7 +5,7 @@ public class Main {
         ShortestPathFinder parallel = new BellmanFordParallel();
 
         long t0 = System.nanoTime();
-        Graph g = new Graph(5000, 100, 0);
+        Graph g = new Graph(5000, 20, 0);
 
         long t1 = System.nanoTime();
         System.out.println("Generating graph time, ms: " + (t1 - t0) * 1e-6);
@@ -15,7 +15,7 @@ public class Main {
 
         System.out.print("Parallel time, ms: ");
         ShortestPathFinder.Result result2 = null;
-        int nTests = 5;
+        int nTests = 1;
         long sum = 0;
         for (int i = 0; i < nTests; i++) {
             long t3 = System.nanoTime();
@@ -29,12 +29,14 @@ public class Main {
         System.out.println("Average parallel time, ms: " + avgParallelTime * 1e-6);
         System.out.println("Speedup: " + (t2 - t1) / avgParallelTime);
 
+        System.out.println("Sequential and parallel distances are identical: " +
+                (result1.distances().equals(result2.distances())));
+        System.out.println("Sequential and parallel predecessors are identical: " +
+                 result1.predecessors().equals(result2.predecessors()));
+
         boolean isSequentialCorrect = PathChecker.verifySolution(g, 0, result1);
         boolean isParallelCorrect = PathChecker.verifySolution(g, 0, result2);
-
         System.out.println("Sequential solution is correct: " + isSequentialCorrect);
         System.out.println("Parallel solution is correct: " + isParallelCorrect);
-
-
     }
 }
