@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class Main {
     public static void main(String[] args) {
 
@@ -7,7 +5,7 @@ public class Main {
         ShortestPathFinder parallel = new BellmanFordParallel(Runtime.getRuntime().availableProcessors());
 
         long t0 = System.nanoTime();
-        Graph g = GraphGenerator.generateGraph(5000, 100, -10000, 10000, 0);
+        Graph g = GraphGenerator.generateGraph(5000, 500, -10000, 10000, 0);
 
         long t1 = System.nanoTime();
         System.out.println("Generating graph time, ms: " + (t1 - t0) * 1e-6);
@@ -31,10 +29,14 @@ public class Main {
         System.out.println("Average parallel time, ms: " + avgParallelTime * 1e-6);
         System.out.println("Speedup: " + (t2 - t1) / avgParallelTime);
 
+//        System.out.println("Sequential and parallel distances are identical: " +
+//                Arrays.equals(result1.distances(), result2.distances()));
+//        System.out.println("Sequential and parallel predecessors are identical: " +
+//                Arrays.equals(result1.predecessors(), result2.predecessors()));
         System.out.println("Sequential and parallel distances are identical: " +
-                Arrays.equals(result1.distances(), result2.distances()));
+                result1.distances().equals(result2.distances()));
         System.out.println("Sequential and parallel predecessors are identical: " +
-                Arrays.equals(result1.predecessors(), result2.predecessors()));
+                result1.predecessors().equals(result2.predecessors()));
 
         boolean isSequentialCorrect = PathChecker.verifySolution(g, 0, result1);
         boolean isParallelCorrect = PathChecker.verifySolution(g, 0, result2);

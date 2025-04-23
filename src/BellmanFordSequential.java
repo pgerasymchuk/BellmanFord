@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,9 +32,10 @@ public class BellmanFordSequential implements ShortestPathFinder {
             }
         }
 
-        int[] distancesArray = distances.stream().mapToInt(Integer::intValue).toArray();
-        int[] predecessorsArray = predecessors.stream().mapToInt(Integer::intValue).toArray();
-
-        return new Result(distancesArray, predecessorsArray);
+//        int[] distancesArray = distances.stream().mapToInt(Integer::intValue).toArray();
+//        int[] predecessorsArray = predecessors.stream().mapToInt(Integer::intValue).toArray();
+//
+//        return new Result(distancesArray, predecessorsArray);
+        return new Result(distances, predecessors);
     }
 }
