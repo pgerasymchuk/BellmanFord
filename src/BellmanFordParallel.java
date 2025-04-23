@@ -31,7 +31,8 @@ public class BellmanFordParallel implements ShortestPathFinder {
 
         byte[] groupNumberOfEdges = new byte[g.E];
         for (int i = 0; i < g.E; i++) {
-            groupNumberOfEdges[i] = (byte)(g.edges.get(i).destination() % numThreads);
+            //groupNumberOfEdges[i] = (byte)(g.edges.get(i).destination() % numThreads);
+            groupNumberOfEdges[i] = (byte)(g.edges[i].destination() % numThreads);
         }
 
         long t2 = System.nanoTime();
@@ -46,18 +47,14 @@ public class BellmanFordParallel implements ShortestPathFinder {
                 int finalJ = j;
                 tasks.add(() -> {
                     boolean localChange = false;
-                    for (int k = 0; k < g.E; k++) {
-                        if (groupNumberOfEdges[k] == finalJ) {
-                            Graph.Edge edge = g.edges.get(k);
-                            /*int u = edge.source();
-                            int v = edge.destination();
-                            int w = edge.weight();
 
-                            if (distances[u] != Integer.MAX_VALUE && distances[u] + w < distances[v]) {
-                                distances[v] = distances[u] + w;
-                                predecessors[v] = u;
-                                //localChange = true;
-                            }*/
+                    int k = 0;
+                    //for (int k = 0; k < g.E; k++) {
+                    for (Graph.Edge edge : g.edges) {
+                        if (groupNumberOfEdges[k] == finalJ) {
+
+                            //Graph.Edge edge = g.edges.get(k);
+
                             if (distances.get(edge.source()) != Integer.MAX_VALUE &&
                                     distances.get(edge.source()) + edge.weight() < distances.get(edge.destination())) {
                                 distances.set(edge.destination(), distances.get(edge.source()) + edge.weight());
@@ -65,6 +62,7 @@ public class BellmanFordParallel implements ShortestPathFinder {
                                 localChange = true;
                             }
                         }
+                        k++;
                     }
                     if (localChange) { changes.set(true); }
                     return null;
@@ -82,22 +80,19 @@ public class BellmanFordParallel implements ShortestPathFinder {
         for (int j = 0; j < numThreads; j++) {
             int finalJ = j;
             tasks.add(() -> {
-                for (int k = 0; k < g.E; k++) {
+                int k = 0;
+                //for (int k = 0; k < g.E; k++) {
+                for (Graph.Edge edge : g.edges) {
                     if (groupNumberOfEdges[k] == finalJ) {
-                        Graph.Edge edge = g.edges.get(k);
-                        /*int u = edge.source();
-                        int v = edge.destination();
-                        int w = edge.weight();
+                        //Graph.Edge edge = g.edges.get(k);
 
-                        if (distances[u] != Integer.MAX_VALUE && distances[u] < distances[v] - w) {
-                            throw new IllegalArgumentException("Graph contains a negative-weight cycle");
-                        }*/
                         if (distances.get(edge.source()) != Integer.MAX_VALUE &&
                                 distances.get(edge.source()) < distances.get(edge.destination()) - edge.weight()) {
 
                             throw new IllegalArgumentException("Graph contains a negative-weight cycle");
                         }
                     }
+                    k++;
                 }
                 return null;
             });
