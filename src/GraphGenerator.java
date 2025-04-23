@@ -20,8 +20,8 @@ public class GraphGenerator {
             int source, destination;
             do {
                 source = random.nextInt(V);
-                //destination = random.nextInt(V - source) + source;
-                destination = random.nextInt(V);
+                destination = random.nextInt(V - source) + source;
+                //destination = random.nextInt(V);
             } while (source == destination || !edgeVerticesSet.add(new EdgeVertices(source, destination)));
             g.edges.add(new Graph.Edge(source, destination, random.nextInt(maxWeight - minWeight + 1) + minWeight));
         }
