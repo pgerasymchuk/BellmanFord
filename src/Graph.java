@@ -9,7 +9,7 @@ public class Graph {
     public final int E;
     public final List<Edge> edges;
 
-    public final int MIN_WEIGHT = 1;//-10000;
+    public final int MIN_WEIGHT = -10000;
     public final int MAX_WEIGHT = 10000;
 
     public Graph(int V, int avgEdgesFromVertex, int randomState) {

@@ -2,10 +2,10 @@ public class Main {
     public static void main(String[] args) {
 
         ShortestPathFinder sequential = new BellmanFordSequential();
-        ShortestPathFinder parallel = new BellmanFordParallel();
+        ShortestPathFinder parallel = new BellmanFordParallel(Runtime.getRuntime().availableProcessors());
 
         long t0 = System.nanoTime();
-        Graph g = new Graph(1000, 4, 0);
+        Graph g = new Graph(5000, 100, 0);
 
         long t1 = System.nanoTime();
         System.out.println("Generating graph time, ms: " + (t1 - t0) * 1e-6);

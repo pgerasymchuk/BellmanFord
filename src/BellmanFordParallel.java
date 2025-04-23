@@ -6,6 +6,12 @@ import java.util.concurrent.Executors;
 
 public class BellmanFordParallel implements ShortestPathFinder {
 
+    private final int numThreads;
+
+    public BellmanFordParallel(int numThreads) {
+        this.numThreads = numThreads;
+    }
+
     @Override
     public Result findShortestPaths(Graph g, int source) {
         int[] distances = new int[g.V];
@@ -16,7 +22,6 @@ public class BellmanFordParallel implements ShortestPathFinder {
 
         //AtomicBoolean changes = new AtomicBoolean(false);
 
-        int numThreads = Runtime.getRuntime().availableProcessors();
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
         long t1 = System.nanoTime();
@@ -75,7 +80,7 @@ public class BellmanFordParallel implements ShortestPathFinder {
                         int v = edge.destination();
                         int w = edge.weight();
 
-                        if (distances[u] != Integer.MAX_VALUE && distances[u] + w < distances[v]) {
+                        if (distances[u] != Integer.MAX_VALUE && distances[u] < distances[v] - w) {
                             throw new IllegalArgumentException("Graph contains a negative-weight cycle");
                         }
                     }

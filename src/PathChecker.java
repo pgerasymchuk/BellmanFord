@@ -26,6 +26,7 @@ public class PathChecker {
         for (int v = 0; v < distances.size(); v++) {
             if (v == source) {
                 realDistances.put(v, 0);
+                continue;
             }
 
             int dist = 0;
@@ -44,9 +45,6 @@ public class PathChecker {
                 current = prev;
             }
 
-//            if (reachable) {
-//                realDistances.put(v, dist);
-//            }
             realDistances.put(v, reachable ? dist : Integer.MAX_VALUE);
         }
 

@@ -26,7 +26,7 @@ public class BellmanFordSequential implements ShortestPathFinder {
 
         for (Graph.Edge edge : g.edges) {
             if (distances.get(edge.source()) != Integer.MAX_VALUE &&
-                distances.get(edge.source()) + edge.weight() < distances.get(edge.destination())) {
+                distances.get(edge.source()) < distances.get(edge.destination()) - edge.weight()) {
 
                 throw new IllegalArgumentException("Graph contains a negative-weight cycle");
             }
