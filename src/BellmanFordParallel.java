@@ -2,7 +2,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-//import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BellmanFordParallel implements ShortestPathFinder {
 
@@ -23,7 +23,7 @@ public class BellmanFordParallel implements ShortestPathFinder {
         distances.set(source, 0);
         List<Integer> predecessors = new ArrayList<>(Collections.nCopies(g.V, -1));
 
-        //AtomicBoolean changes = new AtomicBoolean(false);
+        AtomicBoolean changes = new AtomicBoolean(false);
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
@@ -40,12 +40,12 @@ public class BellmanFordParallel implements ShortestPathFinder {
         ArrayList<Callable<Void>> tasks = new ArrayList<>();
 
         for (int i = 0; i < g.V - 1; i++) {
-            //changes.set(false);
+            changes.set(false);
 
             for (int j = 0; j < numThreads; j++) {
                 int finalJ = j;
                 tasks.add(() -> {
-                    //boolean localChange = false;
+                    boolean localChange = false;
                     for (int k = 0; k < g.E; k++) {
                         if (groupNumberOfEdges[k] == finalJ) {
                             Graph.Edge edge = g.edges.get(k);
@@ -62,11 +62,11 @@ public class BellmanFordParallel implements ShortestPathFinder {
                                     distances.get(edge.source()) + edge.weight() < distances.get(edge.destination())) {
                                 distances.set(edge.destination(), distances.get(edge.source()) + edge.weight());
                                 predecessors.set(edge.destination(), edge.source());
-                                //changes = true;
+                                localChange = true;
                             }
                         }
                     }
-                    //if (localChange) { changes.set(true); }
+                    if (localChange) { changes.set(true); }
                     return null;
                 });
             }
@@ -76,7 +76,7 @@ public class BellmanFordParallel implements ShortestPathFinder {
                 tasks.clear();
             } catch (InterruptedException e) { throw new RuntimeException(e); }
 
-            //if (!changes.get()) { System.out.printf("parallel break at %s iteration\n", i); break; } // no updates in this iteration
+            if (!changes.get()) { System.out.printf("parallel break at %s iteration\n", i); break; } // no updates in this iteration
         }
 
         for (int j = 0; j < numThreads; j++) {
