@@ -19,8 +19,8 @@ public class BellmanFordParallel implements ShortestPathFinder {
         Arrays.fill(distances, Integer.MAX_VALUE);
         Arrays.fill(predecessors, -1);
         distances[source] = 0;*/
-        List<Integer> distances = new ArrayList<>(Collections.nCopies(g.V, Integer.MAX_VALUE));
-        distances.set(source, 0);
+        List<Double> distances = new ArrayList<>(Collections.nCopies(g.V, Double.MAX_VALUE));
+        distances.set(source, 0.0);
         List<Integer> predecessors = new ArrayList<>(Collections.nCopies(g.V, -1));
 
         AtomicBoolean changes = new AtomicBoolean(false);
@@ -55,8 +55,10 @@ public class BellmanFordParallel implements ShortestPathFinder {
 
                             //Graph.Edge edge = g.edges.get(k);
 
-                            if (distances.get(edge.source()) != Integer.MAX_VALUE &&
-                                    distances.get(edge.source()) + edge.weight() < distances.get(edge.destination())) {
+                            if (distances.get(edge.source()) != Double.MAX_VALUE &&
+                                //distances.get(edge.source()) + edge.weight() < distances.get(edge.destination())) {
+                                MathUtils.isLess(distances.get(edge.source()) + edge.weight(), distances.get(edge.destination()))) {
+
                                 distances.set(edge.destination(), distances.get(edge.source()) + edge.weight());
                                 predecessors.set(edge.destination(), edge.source());
                                 localChange = true;
@@ -86,8 +88,9 @@ public class BellmanFordParallel implements ShortestPathFinder {
                     if (groupNumberOfEdges[k] == finalJ) {
                         //Graph.Edge edge = g.edges.get(k);
 
-                        if (distances.get(edge.source()) != Integer.MAX_VALUE &&
-                                distances.get(edge.source()) < distances.get(edge.destination()) - edge.weight()) {
+                        if (distances.get(edge.source()) != Double.MAX_VALUE &&
+                            //distances.get(edge.source()) < distances.get(edge.destination()) - edge.weight()) {
+                            MathUtils.isLess(distances.get(edge.source()), distances.get(edge.destination()) - edge.weight())) {
 
                             throw new IllegalArgumentException("Graph contains a negative-weight cycle");
                         }

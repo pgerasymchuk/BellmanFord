@@ -4,7 +4,7 @@ import java.util.Set;
 
 public class GraphGenerator {
 
-    public static Graph generateGraph(int V, int avgEdgesFromVertex, int minWeight, int maxWeight, int randomState) {
+    public static Graph generateGraph(int V, int avgEdgesFromVertex, double minWeight, double maxWeight, int randomState) {
         if (avgEdgesFromVertex > V - 1) {
             throw new IllegalArgumentException("Invalid average number of edges from vertex");
         }
@@ -24,7 +24,7 @@ public class GraphGenerator {
                 //destination = random.nextInt(V);
             } while (source == destination || !edgeVerticesSet.add(new EdgeVertices(source, destination)));
             //g.edges.add(new Graph.Edge(source, destination, random.nextInt(maxWeight - minWeight + 1) + minWeight));
-            g.edges[i] = new Graph.Edge(source, destination, random.nextInt(maxWeight - minWeight + 1) + minWeight);
+            g.edges[i] = new Graph.Edge(source, destination, random.nextDouble(maxWeight - minWeight) + minWeight);
         }
 
         return g;
