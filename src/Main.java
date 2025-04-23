@@ -7,7 +7,7 @@ public class Main {
         ShortestPathFinder parallel = new BellmanFordParallel(Runtime.getRuntime().availableProcessors());
 
         long t0 = System.nanoTime();
-        Graph g = new Graph(5000, 2, 0);
+        Graph g = GraphGenerator.generateGraph(5000, 100, 1, 10000, 0);
 
         long t1 = System.nanoTime();
         System.out.println("Generating graph time, ms: " + (t1 - t0) * 1e-6);
