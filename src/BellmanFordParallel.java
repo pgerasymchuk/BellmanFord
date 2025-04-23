@@ -96,10 +96,6 @@ public class BellmanFordParallel implements ShortestPathFinder {
 
         executor.shutdown();
 
-        List<Integer> distanceList = Arrays.stream(distances).boxed().toList();
-        List<Integer> predecessorList = Arrays.stream(predecessors).boxed().toList();
-
-        return new Result(distanceList, predecessorList);
+        return new Result(distances, predecessors);
     }
-
 }

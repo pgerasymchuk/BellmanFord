@@ -18,12 +18,12 @@ public class PathChecker {
             edges.put(new EdgeVertices(edge.source(), edge.destination()), edge.weight());
         }
 
-        List<Integer> distances = result.distances();
-        List<Integer> predecessors = result.predecessors();
+        int[] distances = result.distances();
+        int[] predecessors = result.predecessors();
 
         Map<Integer, Integer> realDistances = new HashMap<>();
 
-        for (int v = 0; v < distances.size(); v++) {
+        for (int v = 0; v < distances.length; v++) {
             if (v == source) {
                 realDistances.put(v, 0);
                 continue;
@@ -34,7 +34,7 @@ public class PathChecker {
             boolean reachable = true;
 
             while (current != source) {
-                int prev = predecessors.get(current);
+                int prev = predecessors[current];
                 if (prev == -1) {
                     reachable = false;
                     break;
@@ -48,8 +48,8 @@ public class PathChecker {
             realDistances.put(v, reachable ? dist : Integer.MAX_VALUE);
         }
 
-        for (int v = 0; v < distances.size(); v++) {
-            if (!distances.get(v).equals(realDistances.get(v))) {
+        for (int v = 0; v < distances.length; v++) {
+            if (distances[v] != realDistances.get(v)) {
                 return false;
             }
         }

@@ -1,33 +1,38 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 
 public class BellmanFordSequential implements ShortestPathFinder {
 
     @Override
     public Result findShortestPaths(Graph g, int source) {
-        List<Integer> distances = new ArrayList<>(Collections.nCopies(g.V, Integer.MAX_VALUE));
-        distances.set(source, 0);
-        List<Integer> predecessors = new ArrayList<>(Collections.nCopies(g.V, -1));
+        int[] distances = new int[g.V];
+        int[] predecessors = new int[g.V];
+        Arrays.fill(distances, Integer.MAX_VALUE);
+        Arrays.fill(predecessors, -1);
+        distances[source] = 0;
         //boolean changes;
 
         for (int i = 0; i < g.V - 1; i++) {
             //changes = false;
             for (Graph.Edge edge : g.edges) {
-                if (distances.get(edge.source()) != Integer.MAX_VALUE &&
-                    distances.get(edge.source()) + edge.weight() < distances.get(edge.destination())) {
-                        distances.set(edge.destination(), distances.get(edge.source()) + edge.weight());
-                        predecessors.set(edge.destination(), edge.source());
-                        //changes = true;
+                int u = edge.source();
+                int v = edge.destination();
+                int w = edge.weight();
+
+                if (distances[u] != Integer.MAX_VALUE && distances[u] + w < distances[v]) {
+                    distances[v] = distances[u] + w;
+                    predecessors[v] = u;
+                    //changes = true;
                 }
             }
             //if (!changes) { System.out.printf("seq break at %s iteration\n", i); break; } // no updates in this iteration
         }
 
         for (Graph.Edge edge : g.edges) {
-            if (distances.get(edge.source()) != Integer.MAX_VALUE &&
-                distances.get(edge.source()) < distances.get(edge.destination()) - edge.weight()) {
+            int u = edge.source();
+            int v = edge.destination();
+            int w = edge.weight();
 
+            if (distances[u] != Integer.MAX_VALUE && distances[u] < distances[v] - w) {
                 throw new IllegalArgumentException("Graph contains a negative-weight cycle");
             }
         }
