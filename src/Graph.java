@@ -3,7 +3,7 @@ import java.util.*;
 // Represents a directed graph
 public class Graph {
 
-    public record Edge(int source, int destination, Double weight) {}
+    public record Edge(int source, int destination, int weight) {}
 
     public final int V;
     public final int E;

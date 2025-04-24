@@ -13,26 +13,26 @@ public class PathChecker {
 
     public static boolean verifySolution(Graph g, int source, ShortestPathFinder.Result result) {
         record EdgeVertices(int start, int end) {}
-        Map<EdgeVertices, Double> edges = new HashMap<>();
+        Map<EdgeVertices, Integer> edges = new HashMap<>();
         for (Graph.Edge edge : g.edges){
             edges.put(new EdgeVertices(edge.source(), edge.destination()), edge.weight());
         }
 
 //        int[] distances = result.distances();
 //        int[] predecessors = result.predecessors();
-        List<Double> distances = result.distances();
+        List<Integer> distances = result.distances();
         List<Integer> predecessors = result.predecessors();
 
-        Map<Integer, Double> realDistances = new HashMap<>();
+        Map<Integer, Integer> realDistances = new HashMap<>();
 
         //for (int v = 0; v < distances.length; v++) {
         for (int v = 0; v < distances.size(); v++) {
             if (v == source) {
-                realDistances.put(v, 0.0);
+                realDistances.put(v, 0);
                 continue;
             }
 
-            double dist = 0.0;
+            int dist = 0;
             int current = v;
             boolean reachable = true;
 
@@ -44,12 +44,12 @@ public class PathChecker {
                     break;
                 }
 
-                double edgeWeight = edges.get(new EdgeVertices(prev, current));
+                int edgeWeight = edges.get(new EdgeVertices(prev, current));
                 dist += edgeWeight;
                 current = prev;
             }
 
-            realDistances.put(v, reachable ? dist : Double.MAX_VALUE);
+            realDistances.put(v, reachable ? dist : Integer.MAX_VALUE);
         }
 
 //        for (int v = 0; v < distances.length; v++) {
@@ -58,7 +58,7 @@ public class PathChecker {
 //            }
 //        }
         for (int v = 0; v < distances.size(); v++) {
-            if (!MathUtils.equals(distances.get(v), realDistances.get(v))) {
+            if (!distances.get(v).equals(realDistances.get(v))) {
                 return false;
             }
         }
