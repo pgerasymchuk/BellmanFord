@@ -29,10 +29,6 @@ public class Main {
         System.out.println("Average parallel time, ms: " + avgParallelTime * 1e-6);
         System.out.println("Speedup: " + (t2 - t1) / avgParallelTime);
 
-//        System.out.println("Sequential and parallel distances are identical: " +
-//                Arrays.equals(result1.distances(), result2.distances()));
-//        System.out.println("Sequential and parallel predecessors are identical: " +
-//                Arrays.equals(result1.predecessors(), result2.predecessors()));
         System.out.println("Sequential and parallel distances are identical: " +
                 result1.distances().equals(result2.distances()));
         System.out.println("Sequential and parallel predecessors are identical: " +

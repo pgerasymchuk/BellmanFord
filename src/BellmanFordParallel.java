@@ -14,11 +14,6 @@ public class BellmanFordParallel implements ShortestPathFinder {
 
     @Override
     public Result findShortestPaths(Graph g, int source) {
-        /*int[] distances = new int[g.V];
-        int[] predecessors = new int[g.V];
-        Arrays.fill(distances, Integer.MAX_VALUE);
-        Arrays.fill(predecessors, -1);
-        distances[source] = 0;*/
         List<Integer> distances = new ArrayList<>(Collections.nCopies(g.V, Integer.MAX_VALUE));
         distances.set(source, 0);
         List<Integer> predecessors = new ArrayList<>(Collections.nCopies(g.V, -1));
@@ -27,16 +22,10 @@ public class BellmanFordParallel implements ShortestPathFinder {
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-        long t1 = System.nanoTime();
-
         byte[] groupNumberOfEdges = new byte[g.E];
         for (int i = 0; i < g.E; i++) {
-            //groupNumberOfEdges[i] = (byte)(g.edges.get(i).destination() % numThreads);
             groupNumberOfEdges[i] = (byte)(g.edges[i].destination() % numThreads);
         }
-
-        long t2 = System.nanoTime();
-        System.out.println("Initializing, ms: " + (t2 - t1) * 1e-6);
 
         ArrayList<Callable<Void>> tasks = new ArrayList<>();
 
@@ -47,14 +36,9 @@ public class BellmanFordParallel implements ShortestPathFinder {
                 int finalJ = j;
                 tasks.add(() -> {
                     boolean localChange = false;
-
                     int k = 0;
-                    //for (int k = 0; k < g.E; k++) {
                     for (Graph.Edge edge : g.edges) {
                         if (groupNumberOfEdges[k] == finalJ) {
-
-                            //Graph.Edge edge = g.edges.get(k);
-
                             if (distances.get(edge.source()) != Integer.MAX_VALUE &&
                                     distances.get(edge.source()) + edge.weight() < distances.get(edge.destination())) {
                                 distances.set(edge.destination(), distances.get(edge.source()) + edge.weight());
@@ -74,18 +58,15 @@ public class BellmanFordParallel implements ShortestPathFinder {
                 tasks.clear();
             } catch (InterruptedException e) { throw new RuntimeException(e); }
 
-            if (!changes.get()) { System.out.printf("parallel break at %s iteration\n", i); break; } // no updates in this iteration
+            if (!changes.get()) { break; }
         }
 
         for (int j = 0; j < numThreads; j++) {
             int finalJ = j;
             tasks.add(() -> {
                 int k = 0;
-                //for (int k = 0; k < g.E; k++) {
                 for (Graph.Edge edge : g.edges) {
                     if (groupNumberOfEdges[k] == finalJ) {
-                        //Graph.Edge edge = g.edges.get(k);
-
                         if (distances.get(edge.source()) != Integer.MAX_VALUE &&
                                 distances.get(edge.source()) < distances.get(edge.destination()) - edge.weight()) {
 
@@ -106,9 +87,5 @@ public class BellmanFordParallel implements ShortestPathFinder {
         executor.shutdown();
 
         return new Result(distances, predecessors);
-
-        /*int[] distancesArray = distances.stream().mapToInt(Integer::intValue).toArray();
-        int[] predecessorsArray = predecessors.stream().mapToInt(Integer::intValue).toArray();
-        return new Result(distancesArray, predecessorsArray);*/
     }
 }

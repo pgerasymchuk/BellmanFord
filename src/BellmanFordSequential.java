@@ -21,7 +21,7 @@ public class BellmanFordSequential implements ShortestPathFinder {
                     changes = true;
                 }
             }
-            if (!changes) { System.out.printf("seq break at %s iteration\n", i); break; } // no updates in this iteration
+            if (!changes) { break; }
         }
 
         for (Graph.Edge edge : g.edges) {
@@ -32,10 +32,6 @@ public class BellmanFordSequential implements ShortestPathFinder {
             }
         }
 
-//        int[] distancesArray = distances.stream().mapToInt(Integer::intValue).toArray();
-//        int[] predecessorsArray = predecessors.stream().mapToInt(Integer::intValue).toArray();
-//
-//        return new Result(distancesArray, predecessorsArray);
         return new Result(distances, predecessors);
     }
 }
