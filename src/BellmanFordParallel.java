@@ -6,9 +6,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BellmanFordParallel implements ShortestPathFinder {
 
-    private final int numThreads;
+    private int numThreads;
+
+    public BellmanFordParallel() {
+        this.numThreads = Runtime.getRuntime().availableProcessors();
+    }
 
     public BellmanFordParallel(int numThreads) {
+        this.numThreads = numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
         this.numThreads = numThreads;
     }
 
