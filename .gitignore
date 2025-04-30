@@ -1,5 +1,6 @@
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+visualizations/diagrams/
 .idea/
 *.iml

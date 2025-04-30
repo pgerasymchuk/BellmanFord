@@ -17,5 +17,5 @@ plt.legend(title="Graph properties")
 plt.xticks(group['Threads'].unique())
 plt.tight_layout()
 
-plt.savefig('speedup_nthreads.png', dpi=300)
+plt.savefig('diagrams/speedup_nthreads.png', dpi=300)
 plt.show()
