@@ -8,6 +8,7 @@ def plot_metric(
         title='',
         xlabel='',
         ylabel='',
+        auto_xticks=True,
         output_path='diagram.png',
         group_by_col=None
 ):
@@ -34,9 +35,9 @@ def plot_metric(
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.grid(True)
-    # if group_by_col:
-    #     plt.legend(title="Grouped by")
     plt.legend()
+    if not auto_xticks:
+        plt.xticks(group[x_col].unique())
     plt.tight_layout()
 
     plt.savefig(output_path, dpi=300)
@@ -52,6 +53,7 @@ plot_metric(
     title='Speedup vs Number of threads',
     xlabel='Number of Threads',
     ylabel='Speedup',
+    auto_xticks=False,
     output_path='diagrams/speedup_nthreads.png',
     group_by_col=['Vertices', 'AvgEdges']
 )
@@ -62,6 +64,7 @@ plot_metric(
     title='Efficiency vs Number of threads',
     xlabel='Number of Threads',
     ylabel='Efficiency',
+    auto_xticks=False,
     output_path='diagrams/efficiency_nthreads.png',
     group_by_col=['Vertices', 'AvgEdges']
 )
@@ -72,6 +75,7 @@ plot_metric(
     title='Cost of computation vs Number of threads',
     xlabel='Number of Threads',
     ylabel='Cost of computation',
+    auto_xticks=False,
     output_path='diagrams/efficiency_nthreads.png',
     group_by_col=['Vertices', 'AvgEdges']
 )
