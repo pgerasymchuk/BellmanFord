@@ -17,17 +17,17 @@ public class Main {
         //jvmWarmup();
         System.out.println("JVM warm-up finished");
 
-        // analyze numThreads impact
-        int[] numVerticesArr = new int[] { 5000, 10000, 20000 };
-        int[] avgEdgesFromVertexArr = new int[] { 10, 50, 100 };
+        // for analyzing numThreads impact
+        int[] numVerticesArr = new int[] { 10000, 20000, 30000 };
+        int[] avgEdgesFromVertexArr = new int[] { 50, 100, 150 };
         int[] numThreadsArr = new int[] { 2, 4, 8 };
-        benchmark(numVerticesArr, avgEdgesFromVertexArr, numThreadsArr, "test1.csv");
+        benchmark(numVerticesArr, avgEdgesFromVertexArr, numThreadsArr, "test10.csv");
 
         System.out.println("Test 1 finished");
 
-        //analyze other parameters impact
-        numVerticesArr = new int[] { 1000, 2000, 5000, 10000, 20000, 30000, 40000, 50000 };
-        avgEdgesFromVertexArr = new int[] { 5, 10, 20, 50, 70, 100, 150, 200 };
+        // for analyzing numVertices and avgEdgesFromVertex impact
+        numVerticesArr = new int[] { 10000, 20000, 30000, 40000, 50000 };
+        avgEdgesFromVertexArr = new int[] { 10, 20, 50, 70, 100, 150 };
         numThreadsArr = new int[] { 4 };
         benchmark(numVerticesArr, avgEdgesFromVertexArr, numThreadsArr, "test2.csv");
 
@@ -88,7 +88,7 @@ public class Main {
                                 sumSeqTime * 1e-6 / REPETITIONS, sumParallelTimes[k] * 1e-6 / REPETITIONS,
                                 (double) sumSeqTime / sumParallelTimes[k],
                                 (double) sumSeqTime / sumParallelTimes[k] / numThreadsArr[k],
-                                sumParallelTimes[k] * 1e-6 / numThreadsArr[k] / REPETITIONS);
+                                sumParallelTimes[k] * 1e-6 * numThreadsArr[k] / REPETITIONS);
                     }
                 }
             }
