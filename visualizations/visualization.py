@@ -40,7 +40,7 @@ def plot_metric(
         plt.xticks(group[x_col].unique())
     plt.tight_layout()
 
-    plt.savefig(output_path, dpi=300)
+    plt.savefig(output_path, dpi=100)
     plt.show()
 
 
@@ -76,7 +76,7 @@ plot_metric(
     xlabel='Number of Threads',
     ylabel='Cost of computation',
     auto_xticks=False,
-    output_path='diagrams/efficiency_nthreads.png',
+    output_path='diagrams/cost_nthreads.png',
     group_by_col=['Vertices', 'AvgEdges']
 )
 

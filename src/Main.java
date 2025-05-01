@@ -9,37 +9,35 @@ public class Main {
     private static final int MIN_EDGE_WEIGHT = -10000;
     private static final int MAX_EDGE_WEIGHT = 10000;
     private static final int REPETITIONS = 4;
+    private static final String path1 = "test1.csv";
+    private static final String path2 = "test2.csv";
 
     public static void main(String[] args) {
         System.out.println("Number of available processors: " + Runtime.getRuntime().availableProcessors());
 
         System.out.println("JVM warm-up started");
-        //jvmWarmup();
+        jvmWarmup();
         System.out.println("JVM warm-up finished");
 
-        // for analyzing numThreads impact
         int[] numVerticesArr = new int[] { 10000, 20000, 30000 };
         int[] avgEdgesFromVertexArr = new int[] { 50, 100, 150 };
-        int[] numThreadsArr = new int[] { 2, 4, 8 };
-        benchmark(numVerticesArr, avgEdgesFromVertexArr, numThreadsArr, "test10.csv");
+        int[] numThreadsArr = new int[] { 2, 4, 6 };
+        benchmark(numVerticesArr, avgEdgesFromVertexArr, numThreadsArr, path1);
 
         System.out.println("Test 1 finished");
 
-        // for analyzing numVertices and avgEdgesFromVertex impact
-        numVerticesArr = new int[] { 10000, 20000, 30000, 40000, 50000 };
-        avgEdgesFromVertexArr = new int[] { 10, 20, 50, 70, 100, 150 };
+        numVerticesArr = new int[] { 1000, 2000, 5000, 10000, 20000, 30000, 40000, 50000 };
+        avgEdgesFromVertexArr = new int[] { 5, 10, 20, 50, 70, 100, 150 };
         numThreadsArr = new int[] { 4 };
-        benchmark(numVerticesArr, avgEdgesFromVertexArr, numThreadsArr, "test2.csv");
+        benchmark(numVerticesArr, avgEdgesFromVertexArr, numThreadsArr, path2);
 
         System.out.println("Test 2 finished");
-
     }
 
     private static void benchmark(int[] numVerticesArr, int[] avgEdgesFromVertexArr, int[] numThreadsArr, String filePath){
         BellmanFordSequential sequential = new BellmanFordSequential();
         BellmanFordParallel parallel = new BellmanFordParallel();
         int sourceVertex = 0;
-
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath, false))) {
             writer.println("Vertices,AvgEdges,Threads,Sequential(ms),Parallel(ms),Speedup,Efficiency,CostOfComputation");
@@ -102,11 +100,11 @@ public class Main {
         BellmanFordParallel parallel = new BellmanFordParallel();
         int sourceVertex = 0;
 
+        Graph g = GraphGenerator.generateGraph(10000, 100, MIN_EDGE_WEIGHT, MAX_EDGE_WEIGHT, 0);
         for (int i = 0; i < JVM_WARM_UP_ITERATIONS; i++) {
-            Graph g = GraphGenerator.generateGraph(10000, 100, MIN_EDGE_WEIGHT, MAX_EDGE_WEIGHT, 0);
             if (!PathChecker.verifySolution(g, sourceVertex, sequential.findShortestPaths(g, 0)) ||
-                    !PathChecker.verifySolution(g, sourceVertex, parallel.findShortestPaths(g, 0))) {
-                System.out.println("Incorrect solution obtained during JVM warm-up!");
+                !PathChecker.verifySolution(g, sourceVertex, parallel.findShortestPaths(g, 0))) {
+                System.out.println("Obtained results during JVM warm-up are not correct!");
             }
         }
     }
