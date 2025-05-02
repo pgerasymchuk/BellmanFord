@@ -102,3 +102,14 @@ plot_metric(
     output_path='diagrams/speedup_vertices.png',
     group_by_col=['AvgEdges']
 )
+
+plot_metric(
+    df=df[df['AvgEdges'] == 50],
+    x_col='Vertices',
+    y_col='Sequential(ms)',
+    title='Sequential Time vs Vertices (AvgEdges = 50)',
+    xlabel='Vertices',
+    ylabel='Sequential Time (ms)',
+    output_path='diagrams/seq_time_vertices.png',
+    auto_xticks=True
+)
